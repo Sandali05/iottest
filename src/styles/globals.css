@@ -1,0 +1,46 @@
+:root {
+  font-family: Arial, sans-serif;
+  background: #2f2f2f;
+  color: #fff;
+}
+body {
+  margin: 0;
+  background: #2f2f2f;
+}
+* { box-sizing: border-box; }
+.app-shell { display: grid; grid-template-columns: 220px 1fr; min-height: 100vh; }
+.sidebar { background: #3b3b3b; padding: 20px; }
+.sidebar nav { display: grid; gap: 10px; margin-top: 16px; }
+.sidebar a { color: #ccc; text-decoration: none; }
+.sidebar a.active { color: #fff; font-weight: 700; }
+.topbar { display:flex; justify-content:space-between; padding:16px 20px; background:#444; }
+.page-container { padding: 20px; }
+.title-row{display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.grid { display:grid; gap:16px; }
+.gauges { grid-template-columns: 1fr 1fr 2fr; align-items: start; }
+.mid-grid { margin-top:16px; grid-template-columns: 2fr 1fr; }
+.panel { background:#4a4a4a; border-radius:16px; padding:16px; }
+.panel-title { margin: 0 0 10px; font-size: 28px; }
+.status-badge { border-radius:999px; padding:8px 12px; font-weight:700; }
+.status-badge.ok { background:#86efac; color:#052e16; }
+.status-badge.danger { background:#fca5a5; color:#450a0a; }
+.semi-gauge { width: 100%; max-width: 260px; height: auto; display: block; }
+.g-track,.g-zone,.g-active { fill: none; stroke-linecap: round; stroke-width: 20; }
+.g-track { stroke: #2f2f2f; }
+.g-zone.safe { stroke: #9be88c; }
+.g-zone.warn { stroke: #d9ef7a; }
+.g-zone.alert { stroke: #f59e0b; }
+.g-active { stroke-width: 10; }
+.g-needle { stroke: #f5f5f5; stroke-width: 3; }
+.gauge-value { margin-top:6px; font-size:48px; font-weight:700; text-align: center; }
+.forecast-grid { display: grid; grid-template-columns: 1fr 160px; gap: 12px; align-items: stretch; }
+.forecast-chart-wrap { height: 210px; }
+.forecast-side { background: linear-gradient(180deg, #454545, #5b3c3c); border-radius: 14px; padding: 10px 12px; }
+.forecast-row { display:flex; justify-content:space-between; margin: 8px 0; color:#f4f4f5; }
+.forecast-alert { margin-top: 10px; border-radius: 12px; padding: 10px 12px; font-weight: 600; }
+.forecast-alert.warn { background:#7f1d1d33; border:1px solid #f87171; color:#fecaca; }
+.forecast-alert.ok { background:#14532d33; border:1px solid #4ade80; color:#bbf7d0; }
+.sensor-table { width:100%; border-collapse: collapse; }
+.sensor-table th,.sensor-table td { text-align:left; border-bottom:1px solid #666; padding:10px 6px; }
+.corr-list { list-style:none; padding:0; margin:0; display:grid; gap:10px; }
+.corr-list li { display:flex; justify-content:space-between; }
