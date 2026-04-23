@@ -1,17 +1,22 @@
 import Panel from "../common/Panel";
 
 export default function GaugeCard({ title, value, unit, color }) {
-  const pct = Math.max(0, Math.min(100, Number(value)));
+  const numericValue = Number(value) || 0;
+  const pct = Math.max(0, Math.min(100, numericValue));
+  const angle = -90 + (pct / 100) * 180;
 
   return (
     <Panel title={title}>
-      <div className="gauge-track">
-        <div className="gauge-fill" style={{ width: `${pct}%`, background: color }} />
+      <div className="semi-gauge" style={{ "--gauge-color": color }}>
+        <div className="semi-gauge-arc" />
+        <div className="semi-gauge-needle" style={{ transform: `rotate(${angle}deg)` }} />
+        <div className="semi-gauge-center" />
       </div>
       <div className="gauge-value">
-        {Math.round(value)}
+        {Math.round(numericValue)}
         {unit}
       </div>
+      <div className="gauge-label">flame_intensity (%)</div>
     </Panel>
   );
 }

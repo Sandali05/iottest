@@ -188,27 +188,67 @@ main {
   background: #dfadb0;
 }
 
-.gauge-track {
-  height: 15px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.26);
-  overflow: hidden;
-  box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.35);
+.semi-gauge {
+  --track-bg: #2f3338;
+  position: relative;
+  width: min(230px, 100%);
+  aspect-ratio: 2 / 1;
+  margin: 2px auto 0;
 }
 
-.gauge-fill {
-  height: 100%;
-  border-radius: inherit;
-  filter: saturate(0.95) brightness(1.08);
+.semi-gauge-arc {
+  position: absolute;
+  inset: 0;
+  border-radius: 220px 220px 0 0;
+  background: conic-gradient(
+    from 180deg,
+    #9ff093 0deg 65deg,
+    var(--gauge-color) 65deg 145deg,
+    #f5a60d 145deg 180deg,
+    transparent 180deg
+  );
+  -webkit-mask: radial-gradient(circle at 50% 100%, transparent 0 58%, #000 59% 100%);
+  mask: radial-gradient(circle at 50% 100%, transparent 0 58%, #000 59% 100%);
+}
+
+.semi-gauge-needle {
+  position: absolute;
+  left: calc(50% - 2px);
+  bottom: 0;
+  width: 4px;
+  height: calc(100% - 24px);
+  background: linear-gradient(180deg, #f3f5f9 0%, #cfd5de 100%);
+  border-radius: 999px;
+  transform-origin: bottom center;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.45);
+}
+
+.semi-gauge-center {
+  position: absolute;
+  left: 50%;
+  bottom: -1px;
+  transform: translateX(-50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #f3f5f9;
+  box-shadow: 0 0 0 4px rgba(41, 45, 53, 0.9);
 }
 
 .gauge-value {
-  margin-top: 14px;
+  margin-top: 4px;
   text-align: center;
   font-size: 48px;
   font-weight: 700;
   letter-spacing: 0.02em;
   color: #f4f5f7;
+}
+
+.gauge-label {
+  margin-top: -2px;
+  text-align: center;
+  color: rgba(229, 233, 239, 0.78);
+  font-size: 20px;
 }
 
 .corr-list {
@@ -269,5 +309,9 @@ main {
 
   .gauge-value {
     font-size: 40px;
+  }
+
+  .gauge-label {
+    font-size: 16px;
   }
 }
