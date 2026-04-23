@@ -44,3 +44,5 @@ body {
 .sensor-table th,.sensor-table td { text-align:left; border-bottom:1px solid #666; padding:10px 6px; }
 .corr-list { list-style:none; padding:0; margin:0; display:grid; gap:10px; }
 .corr-list li { display:flex; justify-content:space-between; }
+
+.muted { margin: 4px 0 0; color: #d4d4d8; font-size: 14px; }

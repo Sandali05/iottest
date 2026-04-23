@@ -22,11 +22,48 @@ function parseCsv(text) {
     );
 }
 
+function resolveLatestRecord(rawLatest, rawHistory, rawRoot) {
+  // 1) Direct latest object path
+  const latestDirect = normalizeEntry(rawLatest || {});
+  if (latestDirect.timestampMs) return latestDirect;
+
+  // 2) Latest may be stored as pushed children under /latest
+  const latestArray = toArray(rawLatest)
+    .map(normalizeEntry)
+    .sort((a, b) => b.timestampMs - a.timestampMs);
+  if (latestArray[0]?.timestampMs) return latestArray[0];
+
+  // 3) Fallback to first row of history
+  const historyArray = toArray(rawHistory)
+    .map(normalizeEntry)
+    .sort((a, b) => b.timestampMs - a.timestampMs);
+  if (historyArray[0]?.timestampMs) return historyArray[0];
+
+  // 4) Some schemas store everything under /TempnHumData root
+  const rootHistory = toArray(rawRoot?.history)
+    .map(normalizeEntry)
+    .sort((a, b) => b.timestampMs - a.timestampMs);
+  if (rootHistory[0]?.timestampMs) return rootHistory[0];
+
+  return normalizeEntry({});
+}
+
+function resolveHistoryRows(rawHistory, rawRoot) {
+  const source = rawHistory ?? rawRoot?.history ?? rawRoot;
+  return toArray(source)
+    .map(normalizeEntry)
+    .filter((x) => x.timestampMs)
+    .sort((a, b) => b.timestampMs - a.timestampMs);
+}
+
 export function useTempHumData() {
-  const [latest, setLatest] = useState({});
+  const [latest, setLatest] = useState(normalizeEntry({}));
   const [historyRows, setHistoryRows] = useState([]);
   const [analytics, setAnalytics] = useState({});
   const [csvRows, setCsvRows] = useState([]);
+  const [rawLatest, setRawLatest] = useState(null);
+  const [rawHistory, setRawHistory] = useState(null);
+  const [rawRoot, setRawRoot] = useState(null);
 
   useEffect(() => {
     fetch(csvUrl)
@@ -34,25 +71,23 @@ export function useTempHumData() {
       .then((text) => setCsvRows(parseCsv(text)))
       .catch(() => setCsvRows([]));
 
-    const unsubLatest = subscribePath(db, "TempnHumData/latest", (val) =>
-      setLatest(val || {}),
-    );
-    const unsubHistory = subscribePath(db, "TempnHumData/history", (val) => {
-      const rows = toArray(val)
-        .map(normalizeEntry)
-        .sort((a, b) => b.timestampMs - a.timestampMs);
-      setHistoryRows(rows);
-    });
-    const unsubAnalytics = subscribePath(db, "analytics", (val) =>
-      setAnalytics(val || {}),
-    );
+    const unsubLatest = subscribePath(db, "TempnHumData/latest", (val) => setRawLatest(val));
+    const unsubHistory = subscribePath(db, "TempnHumData/history", (val) => setRawHistory(val));
+    const unsubRoot = subscribePath(db, "TempnHumData", (val) => setRawRoot(val));
+    const unsubAnalytics = subscribePath(db, "analytics", (val) => setAnalytics(val || {}));
 
     return () => {
       unsubLatest();
       unsubHistory();
+      unsubRoot();
       unsubAnalytics();
     };
   }, []);
+
+  useEffect(() => {
+    setLatest(resolveLatestRecord(rawLatest, rawHistory, rawRoot));
+    setHistoryRows(resolveHistoryRows(rawHistory, rawRoot));
+  }, [rawLatest, rawHistory, rawRoot]);
 
   const latest5 = useMemo(() => historyRows.slice(0, 5), [historyRows]);
   const liveTemp = Number(latest.temperature ?? latest5[0]?.temperature ?? 0);
@@ -68,10 +103,13 @@ export function useTempHumData() {
       }),
     );
 
-    return cloudForecast.length ? cloudForecast.slice(0, 6) : arForecastTemperature(historyRows, 6, 10, 3);
+    return cloudForecast.length
+      ? cloudForecast.slice(0, 6)
+      : arForecastTemperature(historyRows, 6, 10, 3);
   }, [analytics, historyRows]);
 
   return {
+    latest,
     latest5,
     liveTemp,
     liveHum,

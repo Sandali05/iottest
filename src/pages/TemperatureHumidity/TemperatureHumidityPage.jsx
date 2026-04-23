@@ -8,7 +8,7 @@ import { useTempHumData } from "../../hooks/useTempHumData";
 import { computeCorrelationsFromCsvRows } from "../../utils/correlation";
 
 export default function TemperatureHumidityPage() {
-  const { latest5, liveTemp, liveHum, forecast, correlation, csvRows } = useTempHumData();
+  const { latest, latest5, liveTemp, liveHum, forecast, correlation, csvRows } = useTempHumData();
 
   const csvCorrelation = computeCorrelationsFromCsvRows(csvRows);
   const mergedCorrelation = {
@@ -21,7 +21,10 @@ export default function TemperatureHumidityPage() {
   return (
     <div className="temp-page">
       <div className="title-row">
-        <h1>Humidity and Temperature Monitoring</h1>
+        <div>
+          <h1>Humidity and Temperature Monitoring</h1>
+          <p className="muted">Live update: {latest.timestamp || "Waiting for realtime data..."}</p>
+        </div>
         <StatusBadge label={`System ${risk}`} tone={risk === "DANGER" ? "danger" : "ok"} />
       </div>
 
